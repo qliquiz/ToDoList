@@ -1,5 +1,7 @@
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from "@nestjs/swagger/dist/decorators/api-property.decorator";
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Project } from "src/projects/projects.entity";
+import { Task } from "src/tasks/tasks.entity";
 
 
 @Entity()
@@ -40,7 +42,13 @@ export class User {
   @Column({ type: 'float', default: 0.0 })
   tasksDoneRate: number;
 
-  @ApiProperty({ example: '14.06.2024, 21:39:44', description: 'Время регистрации пользователя' })
+  @ApiProperty({ example: '2024-06-16T04:01:57.423Z', description: 'Время регистрации' })
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  signUp: Date;
+  signUpAt: Date;
+
+  @OneToMany(() => Project, (project) => project.user, { cascade: true })
+  projects: Project[];
+
+  @OneToMany(() => Task, (task) => task.user, { cascade: true })
+  tasks: Task[];
 }
