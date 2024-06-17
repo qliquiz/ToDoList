@@ -11,7 +11,6 @@ import { ColumnEntity } from './columns/columns.entity';
 import { Task } from './tasks/tasks.entity';
 import { AuthModule } from './auth/auth.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

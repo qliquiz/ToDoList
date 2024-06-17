@@ -3,7 +3,6 @@ import { ApiProperty } from "@nestjs/swagger/dist/decorators/api-property.decora
 import { Project } from "src/projects/projects.entity";
 import { Task } from "src/tasks/tasks.entity";
 
-
 @Entity()
 export class User {
   @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })
@@ -48,7 +47,4 @@ export class User {
 
   @OneToMany(() => Project, (project) => project.user, { cascade: true })
   projects: Project[];
-
-  @OneToMany(() => Task, (task) => task.user, { cascade: true })
-  tasks: Task[];
 }

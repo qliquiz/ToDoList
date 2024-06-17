@@ -1,9 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger/dist/decorators/api-property.decorator";
 
-
-export class ProjectsDTO {
-  @ApiProperty({ example: 'todo1', description: 'Название' })
-  readonly name: string;
-  @ApiProperty({ example: 'blablabla', description: 'Описание' })
+export class ProjectDTO {
+  @ApiProperty({ example: 'todo1', description: 'Заголовок' })
+  readonly title: string;
+  @ApiProperty({ example: 'Подготовка к Новому Году', description: 'Описание' })
   readonly description: string;
 }

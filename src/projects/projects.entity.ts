@@ -1,9 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, CreateDateColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger/dist/decorators';
 import { ColumnEntity } from 'src/columns/columns.entity';
-import { Task } from 'src/tasks/tasks.entity';
 import { User } from 'src/users/users.entity';
-
 
 @Entity()
 export class Project {
@@ -11,16 +9,17 @@ export class Project {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: 'Новый Год', description: 'Название' })
+  @ApiProperty({ example: 'Новый Год', description: 'Заголовок' })
   @Column({ type: 'varchar', length: 50, nullable: false })
-  name: string;
+  title: string;
 
   @ApiProperty({ example: 'Подготовка к Новому Году', description: 'Описание' })
   @Column({ type: 'varchar', length: 100, default: '' })
   description: string;
 
-  @ApiProperty({ example: '14.06.2024, 21:39:44', description: 'Время создания' })
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @ApiProperty({ example: '2024-06-16T04:01:57.423Z', description: 'Время создания' })
+  // @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   createdAt: Date;
 
   @ManyToOne(() => User, (user) => user.projects)
@@ -28,8 +27,4 @@ export class Project {
 
   @OneToMany(() => ColumnEntity, (column) => column.project, { cascade: true })
   columns: ColumnEntity[];
-
-  @ManyToMany(() => Task, (task) => task.projects, { cascade: true })
-  @JoinTable()
-  tasks: Task[];
 }

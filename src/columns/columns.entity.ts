@@ -14,7 +14,7 @@ export class ColumnEntity {
   @Column()
   name: string;
 
-  @ApiProperty({ example: '1', description: 'Порядок в списке' })
+  @ApiProperty({ example: '0', description: 'Порядок в списке' })
   @Column()
   order: number;
 

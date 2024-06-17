@@ -5,10 +5,11 @@ import { ColumnsController } from './columns.controller';
 import { ColumnEntity } from './columns.entity';
 import { Project } from 'src/projects/projects.entity';
 import { Task } from 'src/tasks/tasks.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ColumnEntity, Project, Task])],
+  imports: [TypeOrmModule.forFeature([ColumnEntity, Project, Task]), AuthModule],
   providers: [ColumnsService],
   controllers: [ColumnsController]
 })
