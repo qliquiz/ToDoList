@@ -19,10 +19,8 @@ export class ProjectsService {
 
   async createProject(dto: ProjectDTO, user_id: number): Promise<Project | null> {
     const user = await this.usersService.getUser(user_id);
-    const newProject = this.projectsRepository.create({...dto, user, columns: []});
-    // user.projects.push(newProject);
-    await this.projectsRepository.save(newProject);
-    return newProject;
+    const newProject = this.projectsRepository.create({...dto, user/* , columns: [] */});
+    return await this.projectsRepository.save(newProject);
   }
 
   async getProjects(user_id: number): Promise<Project[]> {
@@ -35,13 +33,15 @@ export class ProjectsService {
     return await this.projectsRepository.findOneBy({title: project_title, user: user});
   }
 
-  async updateProject(dto: ProjectDTO, project_id: number): Promise<Project | null> {
-    await this.projectsRepository.update({id: project_id}, dto);
-    await this.projectsRepository.save({id: project_id});
-    return this.projectsRepository.findOneBy({id: project_id});
+  async updateProject(dto: ProjectDTO, user_id: number, project_title: string): Promise<Project | null> {
+    const user = await this.usersService.getUser(user_id);
+    await this.projectsRepository.update({title: project_title, user: user}, dto);
+    await this.projectsRepository.save({title: dto.title, user: user});
+    return this.projectsRepository.findOneBy({title: dto.title, user: user});
   }
 
-  async deleteProject(project_id: number): Promise<void> {
-    await this.projectsRepository.delete( {id: project_id} );
+  async deleteProject(user_id: number, project_title: string): Promise<void> {
+    const user = await this.usersService.getUser(user_id);
+    await this.projectsRepository.delete({title: project_title, user: user});
   }
 }

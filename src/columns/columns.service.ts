@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { ColumnEntity } from './columns.entity';
 import { Repository } from 'typeorm/repository/Repository';
@@ -6,35 +6,27 @@ import { Project } from 'src/projects/projects.entity';
 import { Task } from 'src/tasks/tasks.entity';
 import { ColumnDTO } from './columns.dto';
 import { UsersService } from 'src/users/users.service';
+import { ProjectsService } from 'src/projects/projects.service';
 
 @Injectable()
 export class ColumnsService {
   constructor(
-    private usersService: UsersService,
+    private projectsService: ProjectsService,
     @InjectRepository(ColumnEntity)
     private columnsRepository: Repository<ColumnEntity>,
-    @InjectRepository(Project)
-    private projectsRepository: Repository<Project>,
     @InjectRepository(Task)
-    private tasksRepository: Repository<Task>,
+    private tasksRepository: Repository<Task>
   ) {}
 
   async createColumn(dto: ColumnDTO, user_id: number, project_title: string): Promise<ColumnEntity> {
-    const user = await this.usersService.getUser(user_id);
-    const project = await this.projectsRepository.findOne({
-      where: { id: createColumnDto.projectId, user },
-    });
-    if (!project) {
-      throw new NotFoundException(`Project with ID ${createColumnDto.projectId} not found`);
-    }
-
+    const project = await this.projectsService.getProject(user_id, project_title);
+    if (!project) throw new NotFoundException('Проект не найден');
     const newColumn = this.columnsRepository.create({
-      ...createColumnDto,
-      project,
+      ...dto,
       order: project.columns.length,
+      project,
       tasks: [],
     });
-
     return this.columnsRepository.save(newColumn);
   }
 }
