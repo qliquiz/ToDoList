@@ -12,6 +12,7 @@ import { User } from 'src/users/users.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ColumnEntity, Project, Task, User])],
+  exports: [ColumnsModule],
   providers: [ColumnsService, ProjectsService, UsersService],
   controllers: [ColumnsController]
 })

@@ -31,23 +31,23 @@ export class ProjectsController {
   @ApiResponse({ status: 200, type: Project })
   // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @Get()
-  getProject(@Query('user_id') user_id: number, @Query('project_title') project_title: string): Promise<Project | null> {
-    return this.projectsService.getProject(Number(user_id), project_title);
+  getProject(/* @Query('user_id') user_id: number,  */@Query('project_id') project_id: number): Promise<Project | null> {
+    return this.projectsService.getProject(/* Number(user_id),  */Number(project_id));
   }
 
   @ApiOperation({ summary: 'Изменение проекта по id пользователя и названию проекта' })
   @ApiResponse({ status: 200, type: Project })
   // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @Put()
-  updateProject(@Body() dto: ProjectDTO, @Query('user_id') user_id: number, @Query('project_title') project_title: string): Promise<Project | null> {
-    return this.projectsService.updateProject(dto, Number(user_id), project_title);
+  updateProject(@Body() dto: ProjectDTO/* , @Query('user_id') user_id: number */, @Query('project_id') project_id: number): Promise<Project | null> {
+    return this.projectsService.updateProject(dto/* , Number(user_id) */, Number(project_id));
   }
 
   @ApiOperation({ summary: 'Удаление проекта по id пользователя и названию проекта' })
   @ApiResponse({ status: 200, type: null })
   // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @Delete()
-  deleteProject(@Query('user_id') user_id: number, @Query('project_title') project_title: string): Promise<void> {
-    return this.projectsService.deleteProject(Number(user_id), project_title);
+  deleteProject(/* @Query('user_id') user_id: number,  */@Query('project_id') project_id: number): Promise<void> {
+    return this.projectsService.deleteProject(/* Number(user_id),  */Number(project_id));
   }
 }

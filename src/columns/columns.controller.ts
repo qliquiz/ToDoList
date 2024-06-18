@@ -13,39 +13,39 @@ export class ColumnsController {
   @ApiResponse({ status: 200, type: ColumnEntity })
   // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @Post()
-  createColumn(@Body() dto: ColumnDTO, @Query('user_id') user_id: string, @Query('project_title') project_title: string): Promise<ColumnEntity | null> {
-    return this.columnsService.createColumn(dto, Number(user_id), project_title);
+  createColumn(@Body() dto: ColumnDTO, @Query('project_id') project_id: string): Promise<ColumnEntity | null> {
+    return this.columnsService.createColumn(dto, Number(project_id));
   }
 
-/*   @ApiOperation({ summary: 'Получение всех столбцов' })
+  @ApiOperation({ summary: 'Получение всех столбцов' })
   @ApiResponse({ status: 200, type: [ColumnEntity] })
   // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @Get('all')
-  getColumns(@Query('user_id') user_id: string, @Query('project_id') project_id: string): Promise<ColumnEntity[]> {
-    return this.columnsService.getColumns(Number(user_id), Number(project_id));
+  getColumns(@Query('project_id') project_id: string): Promise<ColumnEntity[]> {
+    return this.columnsService.getColumns(Number(project_id));
   }
 
   @ApiOperation({ summary: 'Получение столбца по id' })
   @ApiResponse({ status: 200, type: ColumnEntity })
   // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @Get()
-  getColumn(@Query('user_id') user_id: string, @Query('project_id') project_id: string): Promise<ColumnEntity | null> {
-    return this.columnsService.getColumn(Number(user_id), Number(project_id));
+  getColumn(@Query('column_id') column_id: string): Promise<ColumnEntity | null> {
+    return this.columnsService.getColumn(Number(column_id));
   }
 
   @ApiOperation({ summary: 'Изменение столбца по id' })
   @ApiResponse({ status: 200, type: ColumnEntity })
   // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @Put()
-  updateColumn(@Body() dto: ColumnDTO, @Query('project_id') project_id: string): Promise<ColumnEntity | null> {
-    return this.columnsService.updateColumn(dto, Number(project_id));
+  updateColumn(@Body() dto: ColumnDTO, @Query('column_id') column_id: string): Promise<ColumnEntity | null> {
+    return this.columnsService.updateColumn(dto, Number(column_id));
   }
 
   @ApiOperation({ summary: 'Удаление столбца по id' })
   @ApiResponse({ status: 200, type: null })
   // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @Delete()
-  deleteColumn(@Query('project_id') project_id: string): Promise<void> {
-    return this.columnsService.deleteColumn(Number(project_id));
-  } */
+  deleteColumn(@Query('column_id') column_id: string): Promise<void> {
+    return this.columnsService.deleteColumn(Number(column_id));
+  }
 }

@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './projects.entity';
 import { Repository } from 'typeorm';
 import { ColumnEntity } from 'src/columns/columns.entity';
-import { Task } from 'src/tasks/tasks.entity';
 import { ProjectDTO } from './projects.dto';
 import { UsersService } from 'src/users/users.service';
 
@@ -12,36 +11,38 @@ export class ProjectsService {
   constructor(
     private usersService: UsersService,
     @InjectRepository(Project)
-    private projectsRepository: Repository<Project>,
-    @InjectRepository(ColumnEntity)
-    private columnsRepository: Repository<ColumnEntity>
+    private projectsRepository: Repository<Project>
   ) {}
 
   async createProject(dto: ProjectDTO, user_id: number): Promise<Project | null> {
     const user = await this.usersService.getUser(user_id);
-    const newProject = this.projectsRepository.create({...dto, user/* , columns: [] */});
+    const newProject = this.projectsRepository.create({
+      ...dto,
+      user
+    });
     return await this.projectsRepository.save(newProject);
   }
 
   async getProjects(user_id: number): Promise<Project[]> {
-    const user = await this.usersService.getUser(user_id);
-    return await this.projectsRepository.find({where: {user}});
+    return await this.projectsRepository.find({
+      where: { user: { id: user_id } },
+      relations: ['columns.tasks']
+    });
   }
 
-  async getProject(user_id: number, project_title: string): Promise<Project | null> {
-    const user = await this.usersService.getUser(user_id);
-    return await this.projectsRepository.findOneBy({title: project_title, user: user});
+  async getProject(project_id: number): Promise<Project | null> {
+    return await this.projectsRepository.findOne({
+      where: {id: project_id},
+      relations: ['columns.tasks']
+    });
   }
 
-  async updateProject(dto: ProjectDTO, user_id: number, project_title: string): Promise<Project | null> {
-    const user = await this.usersService.getUser(user_id);
-    await this.projectsRepository.update({title: project_title, user: user}, dto);
-    await this.projectsRepository.save({title: dto.title, user: user});
-    return this.projectsRepository.findOneBy({title: dto.title, user: user});
+  async updateProject(dto: ProjectDTO, project_id: number): Promise<Project | null> {
+    await this.projectsRepository.update({id: project_id}, dto);
+    return await this.projectsRepository.save({id: project_id});
   }
 
-  async deleteProject(user_id: number, project_title: string): Promise<void> {
-    const user = await this.usersService.getUser(user_id);
-    await this.projectsRepository.delete({title: project_title, user: user});
+  async deleteProject(project_id: number): Promise<void> {
+    await this.projectsRepository.delete({id: project_id});
   }
 }

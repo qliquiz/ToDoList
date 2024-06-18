@@ -18,13 +18,12 @@ export class Project {
   description: string;
 
   @ApiProperty({ example: '2024-06-16T04:01:57.423Z', description: 'Время создания' })
-  // @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   @CreateDateColumn()
   createdAt: Date;
 
   @ManyToOne(() => User, (user) => user.projects)
   user: User;
 
-  @OneToMany(() => ColumnEntity, (column) => column.project, { cascade: true })
+  @OneToMany(() => ColumnEntity, (column) => column.project, { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   columns: ColumnEntity[];
 }

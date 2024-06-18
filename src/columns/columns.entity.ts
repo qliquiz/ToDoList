@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger/dist/decorators';
 import { Project } from 'src/projects/projects.entity';
 import { Task } from 'src/tasks/tasks.entity';
 
-
 @Entity()
 export class ColumnEntity {
   @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })
@@ -11,16 +10,16 @@ export class ColumnEntity {
   id: number;
 
   @ApiProperty({ example: 'to do', description: 'Название' })
-  @Column()
+  @Column({ type: 'varchar', length: 20, nullable: false })
   name: string;
 
   @ApiProperty({ example: '0', description: 'Порядок в списке' })
-  @Column()
+  @Column({ type: 'int', nullable: false})
   order: number;
 
   @ManyToOne(() => Project, (project) => project.columns)
   project: Project;
 
-  @OneToMany(() => Task, (task) => task.column, { cascade: true })
+  @OneToMany(() => Task, (task) => task.column, { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   tasks: Task[];
 }

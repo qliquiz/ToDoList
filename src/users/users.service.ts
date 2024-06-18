@@ -13,16 +13,18 @@ export class UsersService {
 
   async createUser(dto: UserDTO): Promise<User | null> {
     const newUser = this.usersRepository.create(dto);
-    await this.usersRepository.save(newUser);
-    return newUser;
+    return await this.usersRepository.save(newUser);
   }
 
   async getUsers(): Promise<User[]> {
-    return await this.usersRepository.find();
+    return await this.usersRepository.find({ relations: ['projects.columns.tasks'] });
   }
 
   async getUser(id: number): Promise<User | null> {
-    return await this.usersRepository.findOneBy({id: id});
+    return await this.usersRepository.findOne({
+      where: {id: id},
+      relations: ['projects.columns.tasks']
+    });
   }
 
   async getUserByLogin(login: string): Promise<User | null> {
@@ -31,11 +33,10 @@ export class UsersService {
 
   async updateUser(id: number, dto: UserDTO): Promise<User | null> {
     await this.usersRepository.update({id: id}, dto);
-    await this.usersRepository.save({id: id});
-    return this.usersRepository.findOneBy({id: id});
+    return await this.usersRepository.save({id: id});
   }
 
   async deleteUser(id: number): Promise<void> {
-    await this.usersRepository.delete( {id: id} );
+    await this.usersRepository.delete({id: id});
   }
 }
