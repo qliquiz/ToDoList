@@ -1,53 +1,54 @@
-import { Body, Controller, Post, Get, Query, Put, Delete } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger/dist/decorators';
+import { Body, Controller, Post, Get, Query, Put, Delete, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger/dist/decorators';
 import { ProjectsService } from './projects.service';
-import { Project } from './projects.entity';
+import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
+import { CurrentUser } from 'src/auth/user.decorator';
 import { ProjectDTO } from './projects.dto';
+import { Project } from './projects.entity';
+import { User } from 'src/users/users.entity';
 
 @ApiTags('Проекты')
-// @UseGuards(JwtAuthGuard)
-// @ApiBearerAuth()
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
-  @ApiOperation({ summary: 'Создание проекта по id пользователя' })
+  @ApiOperation({ summary: 'Создание проекта' })
   @ApiResponse({ status: 200, type: Project })
-  // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
+  @UseGuards(JwtAuthGuard)
   @Post()
-  createProject(@Body() dto: ProjectDTO, @Query('user_id') user_id: string): Promise<Project | null> {
-    return this.projectsService.createProject(dto, Number(user_id));
+  createProject(@Body() dto: ProjectDTO, @CurrentUser() user: User): Promise<Project | null> {
+    return this.projectsService.createProject(dto, user);
   }
 
-  @ApiOperation({ summary: 'Получение всех проектов по id пользователя' })
+  @ApiOperation({ summary: 'Получение всех проектов пользователя' })
   @ApiResponse({ status: 200, type: [Project] })
-  // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
+  @UseGuards(JwtAuthGuard)
   @Get('all')
-  getProjects(@Query('user_id') user_id: string): Promise<Project[]> {
-    return this.projectsService.getProjects(Number(user_id));
+  getProjects(@CurrentUser() user: User): Promise<Project[]> {
+    return this.projectsService.getProjects(user);
   }
 
-  @ApiOperation({ summary: 'Получение проекта по id пользователя и названию проекта' })
+  @ApiOperation({ summary: 'Получение проекта по id' })
   @ApiResponse({ status: 200, type: Project })
-  // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
+  @UseGuards(JwtAuthGuard)
   @Get()
-  getProject(/* @Query('user_id') user_id: number,  */@Query('project_id') project_id: number): Promise<Project | null> {
-    return this.projectsService.getProject(/* Number(user_id),  */Number(project_id));
+  getProject(@Query('project_id') project_id: string, @CurrentUser() user: User): Promise<Project | null> {
+    return this.projectsService.getProject(+project_id, user);
   }
 
-  @ApiOperation({ summary: 'Изменение проекта по id пользователя и названию проекта' })
+  @ApiOperation({ summary: 'Изменение проекта по id' })
   @ApiResponse({ status: 200, type: Project })
-  // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
+  @UseGuards(JwtAuthGuard)
   @Put()
-  updateProject(@Body() dto: ProjectDTO/* , @Query('user_id') user_id: number */, @Query('project_id') project_id: number): Promise<Project | null> {
-    return this.projectsService.updateProject(dto/* , Number(user_id) */, Number(project_id));
+  updateProject(@Body() dto: ProjectDTO, @Query('project_id') project_id: string, @CurrentUser() user: User): Promise<Project | null> {
+    return this.projectsService.updateProject(dto, +project_id, user);
   }
 
-  @ApiOperation({ summary: 'Удаление проекта по id пользователя и названию проекта' })
+  @ApiOperation({ summary: 'Удаление проекта по id' })
   @ApiResponse({ status: 200, type: null })
-  // @ApiUnauthorizedResponse({ description: 'Не авторизован' })
+  @UseGuards(JwtAuthGuard)
   @Delete()
-  deleteProject(/* @Query('user_id') user_id: number,  */@Query('project_id') project_id: number): Promise<void> {
-    return this.projectsService.deleteProject(/* Number(user_id),  */Number(project_id));
+  deleteProject(@Query('project_id') project_id: string, @CurrentUser() user: User): Promise<void> {
+    return this.projectsService.deleteProject(+project_id, user);
   }
 }

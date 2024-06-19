@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, CreateDateColumn } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger/dist/decorators';
 import { ColumnEntity } from 'src/columns/columns.entity';
+import { ApiProperty } from '@nestjs/swagger/dist/decorators';
 import { User } from 'src/users/users.entity';
 
 @Entity()
@@ -21,9 +21,9 @@ export class Project {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(() => User, (user) => user.projects)
+  @ManyToOne(() => User, (user) => user.projects, { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   user: User;
 
-  @OneToMany(() => ColumnEntity, (column) => column.project, { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @OneToMany(() => ColumnEntity, (column) => column.project)
   columns: ColumnEntity[];
 }

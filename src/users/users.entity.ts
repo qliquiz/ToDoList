@@ -16,7 +16,7 @@ export class User {
   @Column({ type: 'varchar', nullable: false })
   password: string;
 
-  @ApiProperty({ example: '5', description: 'Количество списков' })
+  /* @ApiProperty({ example: '5', description: 'Количество списков' })
   @Column({ type: 'int', default: 0 })
   listsNumber: number;
 
@@ -38,12 +38,12 @@ export class User {
 
   @ApiProperty({ example: '0.5', description: 'Отношение выполненных задач ко всем задачам' })
   @Column({ type: 'float', default: 0.0 })
-  tasksDoneRate: number;
+  tasksDoneRate: number; */
 
   @ApiProperty({ example: '2024-06-16T04:01:57.423Z', description: 'Время регистрации' })
   @CreateDateColumn()
   signUpAt: Date;
 
-  @OneToMany(() => Project, (project) => project.user, { cascade: true })
+  @OneToMany(() => Project, (project) => project.user)
   projects: Project[];
 }

@@ -1,15 +1,15 @@
-import { ConfigModule } from '@nestjs/config';
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
-import { User } from './users/users.entity';
 import { ProjectsModule } from './projects/projects.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ColumnsModule } from './columns/columns.module';
-import { TasksModule } from './tasks/tasks.module';
-import { Project } from './projects/projects.entity';
+import { ConfigModule } from '@nestjs/config';
 import { ColumnEntity } from './columns/columns.entity';
-import { Task } from './tasks/tasks.entity';
+import { UsersModule } from './users/users.module';
+import { TasksModule } from './tasks/tasks.module';
 import { AuthModule } from './auth/auth.module';
+import { Project } from './projects/projects.entity';
+import { Module } from '@nestjs/common';
+import { Task } from './tasks/tasks.entity';
+import { User } from './users/users.entity';
 
 @Module({
   imports: [

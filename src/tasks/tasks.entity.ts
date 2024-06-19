@@ -1,4 +1,4 @@
-import { PrimaryGeneratedColumn, Entity, Column, ManyToOne, ManyToMany, JoinTable, CreateDateColumn } from "typeorm";
+import { PrimaryGeneratedColumn, Entity, Column, ManyToOne, CreateDateColumn } from "typeorm";
 import { ColumnEntity } from "src/columns/columns.entity";
 import { ApiProperty } from "@nestjs/swagger";
 

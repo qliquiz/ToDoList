@@ -1,9 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { ColumnsService } from 'src/columns/columns.service';
-import { Task } from './tasks.entity';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm/dist/common';
+import { ColumnsService } from 'src/columns/columns.service';
+import { ColumnEntity } from 'src/columns/columns.entity';
 import { Repository } from 'typeorm';
 import { TaskDTO } from './tasks.dto';
+import { Task } from './tasks.entity';
+import { User } from 'src/users/users.entity';
 
 @Injectable()
 export class TasksService {
@@ -11,34 +13,88 @@ export class TasksService {
     private columnsService: ColumnsService,
     @InjectRepository(Task)
     private tasksRepository: Repository<Task>,
+    @InjectRepository(ColumnEntity)
+    private columnsRepository: Repository<ColumnEntity>
   ) {}
 
-  async createTask(dto: TaskDTO, column_id: number): Promise<Task> {
-    const column = await this.columnsService.getColumn(column_id);
-    if (!column) throw new NotFoundException('Столбец не найден');
-    const newTask = this.tasksRepository.create({
+  async createTask(dto: TaskDTO, column_id: number, user: User): Promise<Task> {
+    const column: ColumnEntity = await this.columnsService.getColumn(column_id, user);
+    const bookedTask: Task = await this.tasksRepository.findOne({ where: { order: dto.order } });
+    if (bookedTask) throw new BadRequestException('Некорректное значение порядка');
+    const newTask: Task = this.tasksRepository.create({
       ...dto,
       column
     });
     return this.tasksRepository.save(newTask);
   }
 
-  async getTasks(column_id: number): Promise<Task[]> {
+  async getTasks(column_id: number, user: User): Promise<Task[]> {
+    const column: ColumnEntity = await this.columnsRepository.findOne({
+      where: { id: column_id },
+      relations: ['project.user']
+    });
+    if (!column || column.project.user.id !== user.id) throw new NotFoundException('Задача не найдена или недоступна');
     return await this.tasksRepository.find({
-      where: { column: { id: column_id } }
+      where: { column: { id: column_id } },
+      order: { order: 'ASC' }
     });
   }
 
-  async getTask(task_id: number): Promise<Task | null> {
-    return await this.tasksRepository.findOneBy({ id: task_id });
+  async getTask(task_id: number, user: User): Promise<Task | null> {
+    const task: Task = await this.tasksRepository.findOne({
+      where: { id: task_id },
+      relations: ['column.project.user']
+    });
+    if (!task || task.column.project.user.id !== user.id) throw new NotFoundException('Задача не найдена или недоступена');
+    return task;
   }
 
-  async updateTask(dto: TaskDTO, task_id: number): Promise<Task | null> {
+  async updateTask(dto: TaskDTO, task_id: number, user: User): Promise<Task | null> {
+    const task: Task = await this.tasksRepository.findOne({
+      where: { id: task_id},
+      relations: ['column.project.user']
+    });
+    if (!task || task.column.project.user.id !== user.id) throw new NotFoundException('Задача не найдена или недоступена');
+    await this.moveTask(task_id, dto.order, user);
     await this.tasksRepository.update({ id: task_id }, dto);
     return await this.tasksRepository.save({ id: task_id });
   }
 
-  async deleteTask(task_id: number): Promise<void> {
-    await this.tasksRepository.delete({ id: task_id });
+  async moveTask(task_id: number, new_order: number, user: User): Promise<Task | null> {
+    const task: Task = await this.tasksRepository.findOne({
+      where: { id: task_id },
+      relations: ['column.project.user'],
+    });
+    if (!task || task.column.project.user.id !== user.id) throw new NotFoundException('Задача не найдена или недоступена');
+    const tasks: Task[] = await this.tasksRepository.find({
+      where: { column: { id: task.column.id } },
+      order: { order: 'ASC' }
+    });
+    if (task.order < new_order) {
+      for (let t of tasks) {
+        if (task.order < t.order && t.order <= new_order) {
+          t.order--;
+          await this.tasksRepository.save(t);
+        }
+      }
+    } else {
+      for (let t of tasks) {
+        if (t.order >= new_order && t.order < task.order) {
+          t.order++;
+          await this.tasksRepository.save(t);
+        }
+      }
+    }
+    task.order = new_order;
+    return await this.tasksRepository.save(task);
+  }
+
+  async deleteTask(task_id: number, user: User): Promise<void> {
+    const task: Task = await this.tasksRepository.findOne({
+      where: { id: task_id},
+      relations: ['column.project.user']
+    });
+    if (!task || task.column.project.user.id !== user.id) throw new NotFoundException('Задача не найдена или недоступена');
+    await this.tasksRepository.remove(task);
   }
 }

@@ -1,21 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Project } from './projects.entity';
 import { Repository } from 'typeorm';
-import { ColumnEntity } from 'src/columns/columns.entity';
 import { ProjectDTO } from './projects.dto';
-import { UsersService } from 'src/users/users.service';
+import { Project } from './projects.entity';
+import { User } from 'src/users/users.entity';
 
 @Injectable()
 export class ProjectsService {
   constructor(
-    private usersService: UsersService,
     @InjectRepository(Project)
     private projectsRepository: Repository<Project>
   ) {}
 
-  async createProject(dto: ProjectDTO, user_id: number): Promise<Project | null> {
-    const user = await this.usersService.getUser(user_id);
+  async createProject(dto: ProjectDTO, user: User): Promise<Project | null> {
     const newProject = this.projectsRepository.create({
       ...dto,
       user
@@ -23,26 +20,32 @@ export class ProjectsService {
     return await this.projectsRepository.save(newProject);
   }
 
-  async getProjects(user_id: number): Promise<Project[]> {
+  async getProjects(user: User): Promise<Project[]> {
     return await this.projectsRepository.find({
-      where: { user: { id: user_id } },
+      where: { user: { id: user.id } },
       relations: ['columns.tasks']
     });
   }
 
-  async getProject(project_id: number): Promise<Project | null> {
-    return await this.projectsRepository.findOne({
-      where: {id: project_id},
+  async getProject(project_id: number, user: User): Promise<Project | null> {
+    const project = await this.projectsRepository.findOne({
+      where: {id: project_id, user: { id: user.id } },
       relations: ['columns.tasks']
     });
+    if (!project) throw new NotFoundException('Проект не найден или недоступен');
+    return project;
   }
 
-  async updateProject(dto: ProjectDTO, project_id: number): Promise<Project | null> {
-    await this.projectsRepository.update({id: project_id}, dto);
-    return await this.projectsRepository.save({id: project_id});
+  async updateProject(dto: ProjectDTO, project_id: number, user: User): Promise<Project | null> {
+    const project = await this.projectsRepository.findOneBy({ id: project_id, user: { id: user.id } });
+    if (!project) throw new NotFoundException('Проект не найден или недоступен');
+    await this.projectsRepository.update({ id: project_id }, dto);
+    return await this.projectsRepository.save({ id: project_id });
   }
 
-  async deleteProject(project_id: number): Promise<void> {
-    await this.projectsRepository.delete({id: project_id});
+  async deleteProject(project_id: number, user: User): Promise<void> {
+    const project = await this.projectsRepository.findOneBy({ id: project_id, user: { id: user.id } });
+    if (!project) throw new NotFoundException('Проект не найден или недоступен');
+    await this.projectsRepository.remove(project);
   }
 }

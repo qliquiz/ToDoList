@@ -17,9 +17,9 @@ export class ColumnEntity {
   @Column({ type: 'int', nullable: false})
   order: number;
 
-  @ManyToOne(() => Project, (project) => project.columns)
+  @ManyToOne(() => Project, (project) => project.columns, { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   project: Project;
 
-  @OneToMany(() => Task, (task) => task.column, { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @OneToMany(() => Task, (task) => task.column)
   tasks: Task[];
 }
