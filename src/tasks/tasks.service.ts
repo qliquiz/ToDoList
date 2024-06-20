@@ -60,7 +60,7 @@ export class TasksService {
     return await this.tasksRepository.save({ id: task_id });
   }
 
-  async moveTask(task_id: number, new_order: number, user: User): Promise<Task | null> {
+  async moveTask(task_id: number, new_order: number, user: User): Promise<void> {
     const task: Task = await this.tasksRepository.findOne({
       where: { id: task_id },
       relations: ['column.project.user'],
@@ -70,23 +70,20 @@ export class TasksService {
       where: { column: { id: task.column.id } },
       order: { order: 'ASC' }
     });
-    if (task.order < new_order) {
-      for (let t of tasks) {
-        if (task.order < t.order && t.order <= new_order) {
-          t.order--;
+    tasks.filter(t => t.id !== task.id);
+    const sameOrderTask: Task = tasks.find(t => t.order === new_order);
+    if (sameOrderTask) {
+      const currentIndex: number = tasks.indexOf(sameOrderTask);
+      const tasksToReorder: Task[] = tasks.slice(currentIndex);
+      tasksToReorder.forEach(async (t, index) => {
+          t.order = new_order + index + 1;
           await this.tasksRepository.save(t);
-        }
-      }
-    } else {
-      for (let t of tasks) {
-        if (t.order >= new_order && t.order < task.order) {
-          t.order++;
-          await this.tasksRepository.save(t);
-        }
-      }
+      });
     }
     task.order = new_order;
-    return await this.tasksRepository.save(task);
+    await this.tasksRepository.save(task)
+    tasks.push(task);
+    tasks.sort((a, b) => a.order - b.order);
   }
 
   async deleteTask(task_id: number, user: User): Promise<void> {

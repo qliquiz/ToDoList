@@ -48,7 +48,7 @@ export class TasksController {
   @ApiResponse({ status: 200, type: Task })
   @UseGuards(JwtAuthGuard)
   @Put('move')
-  moveColumn(@Query('task_id') task_id: string, @Query('new_order') new_order: string, @CurrentUser() user: User): Promise<Task | null> {
+  moveColumn(@Query('task_id') task_id: string, @Query('new_order') new_order: string, @CurrentUser() user: User): Promise<void> {
     return this.tasksService.moveTask(+task_id, +new_order, user);
   }
 
