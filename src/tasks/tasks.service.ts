@@ -70,7 +70,28 @@ export class TasksService {
       where: { column: { id: task.column.id } },
       order: { order: 'ASC' }
     });
-    tasks.filter(t => t.id !== task.id);
+
+    const filteredTasks: Task[] = tasks.filter(t => t !== task);
+    const old_order: number = task.order;
+    if (new_order < old_order) {
+      filteredTasks.forEach(async t => {
+        if (t.order >= new_order && t.order < old_order) {
+          t.order++;
+          await this.tasksRepository.save(t);
+        }
+      });
+    } else if (new_order > old_order) {
+      filteredTasks.forEach(async t => {
+        if (t.order > old_order && t.order <= new_order) {
+          t.order--;
+          await this.tasksRepository.save(t);
+        }
+      });
+    }
+    task.order = new_order;
+    await this.tasksRepository.save(task)
+
+    /* tasks.filter(t => t.id !== task.id);
     const sameOrderTask: Task = tasks.find(t => t.order === new_order);
     if (sameOrderTask) {
       const currentIndex: number = tasks.indexOf(sameOrderTask);
@@ -83,7 +104,7 @@ export class TasksService {
     task.order = new_order;
     await this.tasksRepository.save(task)
     tasks.push(task);
-    tasks.sort((a, b) => a.order - b.order);
+    tasks.sort((a, b) => a.order - b.order); */
   }
 
   async deleteTask(task_id: number, user: User): Promise<void> {
