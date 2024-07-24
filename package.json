@@ -2,7 +2,7 @@
   "name": "todolist",
   "version": "1.0.5",
   "description": "",
-  "author": "artgor005@gmail.com",
+  "author": "qliquizzz",
   "license": "ISC",
   "main": "./src/main.ts",
   "scripts": {
