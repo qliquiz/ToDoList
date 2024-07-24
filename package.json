@@ -3,8 +3,8 @@
   "version": "0.0.7",
   "description": "",
   "author": "artgor005@gmail.com",
-  "private": false,
-  "license": "UNLICENSED",
+  "license": "ISC",
+  "main": "./src",
   "scripts": {
     "pub": "npm version patch && npm publish",
     "build": "nest build",
