@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "description": "",
   "author": "",
-  "private": true,
+  "private": false,
   "license": "UNLICENSED",
   "scripts": {
     "pub": "npm version patch && npm publish",
