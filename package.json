@@ -1,10 +1,10 @@
 {
-  "name": "todolist",
+  "name": "todo",
   "version": "1.0.6",
   "description": "",
   "author": "qliquizzz",
   "license": "ISC",
-  "main": "./src/main.ts",
+  "main": "./src",
   "scripts": {
     "pub": "npm version patch && npm publish",
     "build": "nest build",
