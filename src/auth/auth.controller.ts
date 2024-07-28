@@ -1,20 +1,18 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiTags } from '@nestjs/swagger';
 import { UserDTO } from 'src/users/users.dto';
 
-@ApiTags('Авторизация')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @Post('/login')
-  logIn(@Body() userDTO: UserDTO) {
+  @Post('login')
+  async logIn(@Body() userDTO: UserDTO) {
     return this.authService.logIn(userDTO);
   }
 
-  @Post('/signup')
-  signUp(@Body() userDTO: UserDTO) {
+  @Post('signup')
+  async signUp(@Body() userDTO: UserDTO) {
     return this.authService.signUp(userDTO);
   }
 }

@@ -1,21 +1,21 @@
-import { UserDTO } from 'src/users/users.dto';
 import { Injectable } from '@nestjs/common';
 import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { UserDTO } from 'src/users/users.dto';
 
 @Injectable()
 export class AuthService {
   private client: ClientProxy;
-  
+
   constructor() {
     this.client = ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
-        urls: ['amqp://rabbitmq:5672'],
+        urls: [process.env.RABBITMQ_URL],
         queue: 'auth_queue',
         queueOptions: {
-          durable: false
-        }
-      }
+          durable: false,
+        },
+      },
     });
   }
 
