@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ColumnsService } from './columns.service';
 import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
 import { ColumnEntity } from './columns.entity';
-import { CurrentUser } from 'src/auth/user.decorator';
+import { CurrentUser } from 'src/users/users.decorator';
 import { ColumnDTO } from './columns.dto';
 import { User } from 'src/users/users.entity';
 

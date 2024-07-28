@@ -2,7 +2,7 @@ import { Body, Controller, Post, Get, Query, Put, Delete, UseGuards } from '@nes
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger/dist/decorators';
 import { ProjectsService } from './projects.service';
 import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
-import { CurrentUser } from 'src/auth/user.decorator';
+import { CurrentUser } from 'src/users/users.decorator';
 import { ProjectDTO } from './projects.dto';
 import { Project } from './projects.entity';
 import { User } from 'src/users/users.entity';
