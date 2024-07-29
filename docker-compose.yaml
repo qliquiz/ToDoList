@@ -1,0 +1,50 @@
+version: '3'
+services:
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: qwerty
+      POSTGRES_DB: todolist
+    ports:
+      - "5433:5432"
+
+  todoauth:
+    build: ./todoauth
+    depends_on:
+      - rabbitmq
+      - postgres
+    environment:
+      - RABBITMQ_URL=amqp://user:password@rabbitmq
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=qwerty
+      - POSTGRES_DB=todolist
+      - JWT_SECRET=SECRET
+    ports:
+      - "3001:3000"
+
+  todolist:
+    build: ./todolist
+    depends_on:
+      - rabbitmq
+      - postgres
+      - todoauth
+    environment:
+      - RABBITMQ_URL=amqp://user:password@rabbitmq
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=qwerty
+      - POSTGRES_DB=todolist
+      - JWT_SECRET=SECRET
+    ports:
+      - "3000:3000"
