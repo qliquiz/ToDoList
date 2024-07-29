@@ -1,7 +1,8 @@
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ProjectsModule } from './projects/projects.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ColumnsModule } from './columns/columns.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ColumnEntity } from './columns/columns.entity';
 import { UsersModule } from './users/users.module';
 import { TasksModule } from './tasks/tasks.module';
@@ -11,7 +12,6 @@ import { Module } from '@nestjs/common';
 import { Task } from './tasks/tasks.entity';
 import { User } from './users/users.entity';
 import * as Joi from '@hapi/joi';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [

@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from './jwt.auth.guard';
+import { AuthService } from './auth.service';
+import { JwtModule } from '@nestjs/jwt';
+import { Module } from '@nestjs/common';
 
 @Module({
   imports: [
